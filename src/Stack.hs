@@ -1,8 +1,14 @@
 module Stack where
 
+import Control.Applicative
+import Control.Monad
 import Data.Maybe (fromJust)
 
 data Stack a = Bottom | Value a (Stack a) deriving (Eq, Show)
+
+instance Alternative (Stack) where
+    empty = Bottom
+    (<|>) = (<>)
 
 instance Applicative (Stack) where
     pure a = Value a Bottom
@@ -28,6 +34,8 @@ instance Monad (Stack) where
     (Value a s) >>= f = if Stack.null fa then Bottom else Value (fromJust $ top $ fa) (s >>= f)
         where
             fa = f a
+
+instance MonadPlus (Stack)
 
 instance Monoid (Stack s) where
     mempty = Bottom
