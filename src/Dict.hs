@@ -24,6 +24,9 @@ instance Traversable (Dict k) where
     traverse f Empty = pure Empty
     traverse f (Entry k v next) = Entry k <$> f v <*> traverse f next
 
+dictZip :: (Eq k) => [k] -> [v] -> Dict k v
+dictZip ks vs = fromList $ zip ks vs
+
 elems :: Dict k v -> [v]
 elems Empty = []
 elems (Entry _ v next) = v : elems next
