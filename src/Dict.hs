@@ -2,8 +2,6 @@
 
 module Qlib.Dict where
 
-import qualified Data.Set as Set
-
 data Dict k v = Empty | Entry k v (Dict k v) deriving (Show)
 
 instance Foldable (Dict k) where
@@ -89,11 +87,11 @@ union (Entry k v next) y = insert k v $ union next y
 unions :: (Eq k, Foldable t) => t (Dict k v) -> Dict k v
 unions = foldr union Empty
 
-valid :: (Ord k) => Dict k v -> Bool
-valid d = valid' d Set.empty
+valid :: (Eq k) => Dict k v -> Bool
+valid d = valid' d []
     where
-        valid' :: (Ord k) => Dict k v -> Set.Set k -> Bool
+        valid' :: (Eq k) => Dict k v -> [k] -> Bool
         valid' Empty _ = True
-        valid' (Entry k _ next) set
-            | Set.member k set = False
-            | otherwise = valid' next $ Set.insert k set
+        valid' (Entry k _ next) ks
+            | elem k ks = False
+            | otherwise = valid' next (k:ks)
